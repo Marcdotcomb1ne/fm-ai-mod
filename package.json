@@ -1,0 +1,31 @@
+{
+  "name": "fm-ai-mod",
+  "version": "1.0.0",
+  "description": "Integração de IA (Gemini) com Football Manager 2023",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "node src/test.js"
+  },
+  "keywords": [
+    "football-manager",
+    "fm23",
+    "ai",
+    "gemini",
+    "mod"
+  ],
+  "author": "Marcos Henry",
+  "license": "MIT",
+  "dependencies": {
+    "chokidar": "^3.5.3",
+    "node-fetch": "^3.3.2",
+    "dotenv": "^16.3.1",
+    "xml2js": "^0.6.2",
+    "adm-zip": "^0.5.10"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
