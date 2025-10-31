@@ -11,6 +11,7 @@ const CONFIG = {
         'Documents/Sports Interactive/Football Manager 2023'),
     
     SAVES_PATH: 'games',
+    EXPORT_PATH: 'exports',
     EDITOR_PATH: 'editor data',
     NEWS_PATH: 'editor data/db/2300/news',
     
@@ -28,14 +29,17 @@ const CONFIG = {
 
 class FMMonitor {
     constructor() {
-        this.savePath = path.join(CONFIG.FM_PATH, CONFIG.SAVES_PATH);
+        this.watchPath = path.join(CONFIG.FM_PATH, CONFIG.EXPORT_PATH);
+        if (!fs.existsSync(this.watchPath)) {
+            fs.mkdirSync(this.watchPath, { recursive: true });
+        }
         this.lastModified = {};
         this.watcher = null;
     }
 
     start() {
         console.log('Iniciando monitor do Football Manager...');
-        console.log(`Monitorando: ${this.savePath}`);
+        console.log(`Monitorando EXPORTS em: ${this.watchPath}`);
 
         this.watcher = watch(this.savePath, {
             persistent: true,
@@ -55,12 +59,11 @@ class FMMonitor {
     }
 
     async onFileChanged(filePath, event) {
-        if (filePath.includes('~') || !filePath.endsWith('.fm')) {
+        if (!filePath.match(/\.(txt|rtf|html)$/i)) {
             return;
         }
 
-        console.log(`\nArquivo ${event}: ${path.basename(filePath)}`);
-
+        console.log(`\nNovo export detectado: ${path.basename(filePath)}`);
         try {
             const saveData = await this.parseSave(filePath);
             
@@ -138,7 +141,12 @@ Destaques: ${matchData.highlights || 'Partida equilibrada'}
 
 Escreva uma notícia de 3 parágrafos, estilo profissional, sem emojis.`;
 
-        return await this.callGemini(prompt);
+        const newsText = await this.callGemini(prompt);
+        
+        if (newsText) {
+            console.log('Notícia de Partida gerada. Salvando...');
+            await FMInjector.injectNews(newsText, 'MATCH_REPORT');
+        }
     }
 
     static async generateTransferNews(transferData) {
@@ -151,7 +159,12 @@ Valor: ${transferData.fee || 'Não divulgado'}
 
 Escreva uma notícia de 2 parágrafos, estilo profissional.`;
 
-        return await this.callGemini(prompt);
+        const newsText = await this.callGemini(prompt);
+        
+        if (newsText) {
+            console.log('Notícia de Transferência gerada. Salvando...');
+            await FMInjector.injectNews(newsText, 'TRANSFER');
+        }
     }
 
     static async generateInjuryNews(injuryData) {
@@ -164,7 +177,12 @@ Tempo afastado: ${injuryData.duration}
 
 Notícia curta, 1-2 parágrafos.`;
 
-        return await this.callGemini(prompt);
+        const newsText = await this.callGemini(prompt);
+        
+        if (newsText) {
+            console.log('Notícia de Lesão gerada. Salvando...');
+            await FMInjector.injectNews(newsText, 'INJURY');
+        }
     }
 
     static async generateInterviewResponse(interviewData) {

@@ -1,6 +1,6 @@
 # FM AI Mod - Football Manager 2023 + Gemini AI
 
-Integração de Inteligência Artificial (Google Gemini) com Football Manager 2023 para gerar notícias, entrevistas e relatórios personalizados.
+Integração de Inteligência Artificial (Google Gemini) com Football Manager 2023 para gerar relatórios personalizados, notícias e entrevistas.
 
 ---
 
